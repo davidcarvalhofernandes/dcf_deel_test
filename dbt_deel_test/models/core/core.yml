@@ -1,32 +1,288 @@
-
 version: 2
-
 models:
   - name: d_organizations
-    description: "Dimension table for organizations"
+    description: Dimension table for organizations
     tests:
       - dbt_utils.expression_is_true:
-          expression: "first_payment_date::date >= created_date_ts::date"
+          expression: first_payment_date::date >= created_date_ts::date
     columns:
-      - name: organization_id
-        description: "The primary key for this table"
+      - name: ORGANIZATION_ID
+        description: The unique identifier for each organization.
+        data_type: NUMBER
         tests:
-          - unique
           - not_null
-
+          - unique
+      - name: FIRST_PAYMENT_DATE
+        description: The date of the first payment made by the organization.
+        data_type: DATE
+      - name: LAST_PAYMENT_DATE
+        description: The date of the most recent payment made by the organization.
+        data_type: DATE
+      - name: LEGAL_ENTITY_COUNTRY_CODE
+        description: The LEGAL_ENTITY_COUNTRY_CODE column represents the country code of
+          the legal entity associated with the organization. This is typically a
+          two-letter ISO 3166-1 alpha-2 code.
+        data_type: NUMBER
+      - name: COUNT_TOTAL_CONTRACTS_ACTIVE
+        description: The COUNT_TOTAL_CONTRACTS_ACTIVE column represents the total number
+          of active contracts associated with the organization. This is a count
+          of all contracts that are currently active and not expired or
+          terminated.
+        data_type: NUMBER
+      - name: CREATED_DATE
+        description: The CREATED_DATE column represents the date when the organization
+          was created. This is typically in the format
+          'yyyy-mm-ddthh24:mi:ss.ff3z' or 'yyyy-mm-ddthh24:mi:ssz'.
+        data_type: VARCHAR
+      - name: CREATED_DATE_TS
+        description: This column represents the timestamp of when the organization was
+          created. It is derived from the 'created_date' column in the
+          'organizations' table of the 'raw_source_data' schema in the
+          'dcf_deel_test' database. The timestamp is created using the
+          TRY_TO_TIMESTAMP function, which attempts to convert the
+          'created_date' string into a timestamp using the provided formats
+          ('yyyy-mm-ddthh24:mi:ss.ff3z' and 'yyyy-mm-ddthh24:mi:ssz'). If the
+          conversion fails, the COALESCE function ensures that a NULL value is
+          not returned.
+        data_type: TIMESTAMP_NTZ
+      - name: LOAD_DATE
+        description: This column represents the timestamp of when the data was loaded
+          into the 'd_organizations' model. It is generated using the
+          CURRENT_TIMESTAMP() function, which returns the current date and time
+          at the moment of data loading.
+        data_type: TIMESTAMP_LTZ
   - name: f_organizations_daily
-    description: "Daily snapshot of organizations"
+    description: Daily snapshot of organizations
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - organization_id
             - dt
-  
+    columns:
+      - name: DT
+        description: This column represents the date for the corresponding data row. It
+          is of DATE data type.
+        data_type: DATE
+      - name: ORGANIZATION_ID
+        description: This column represents the unique identifier for each organization.
+          It is of NUMBER data type.
+        data_type: NUMBER
+      - name: DAILY_CANCELLED_AMOUNT_USD
+        description: This column represents the total amount in USD that was cancelled
+          on a particular day. It is of NUMBER data type.
+        data_type: NUMBER
+      - name: DAILY_CREDITED_AMOUNT_USD
+        description: This column represents the total amount credited to the
+          organization in USD on a daily basis. The amount is calculated by
+          summing up all the invoice amounts with a status of 'credited' for
+          each day.
+        data_type: NUMBER
+      - name: DAILY_FAILED_AMOUNT_USD
+        description: This column represents the total amount of failed transactions for
+          the organization in USD on a daily basis. The amount is calculated by
+          summing up all the invoice amounts with a status of 'failed' for each
+          day.
+        data_type: NUMBER
+      - name: DAILY_OPEN_AMOUNT_USD
+        description: This column represents the total amount of open transactions for
+          the organization in USD on a daily basis. The amount is calculated by
+          summing up all the invoice amounts with a status of 'open' for each
+          day.
+        data_type: NUMBER
+      - name: DAILY_PAID_AMOUNT_USD
+        description: This column represents the total amount in USD that has been paid
+          by the organization on a particular day. The amount is calculated by
+          summing up all the invoice amounts with a status of 'paid' for the
+          organization on that day.
+        data_type: NUMBER
+      - name: DAILY_PENDING_AMOUNT_USD
+        description: This column represents the total amount in USD that is pending for
+          payment by the organization on a particular day. The amount is
+          calculated by summing up all the invoice amounts with a status of
+          'pending' for the organization on that day.
+        data_type: NUMBER
+      - name: DAILY_PROCESSING_AMOUNT_USD
+        description: This column represents the total amount in USD that is currently
+          being processed for payment by the organization on a particular day.
+          The amount is calculated by summing up all the invoice amounts with a
+          status of 'processing' for the organization on that day.
+        data_type: NUMBER
+      - name: DAILY_REFUNDED_AMOUNT_USD
+        description: This column represents the total amount refunded in USD on a daily
+          basis. It is calculated by summing up the amounts of all invoices with
+          a status of 'refunded' for each day.
+        data_type: NUMBER
+      - name: DAILY_SKIPPED_AMOUNT_USD
+        description: This column represents the total amount skipped in USD on a daily
+          basis. It is calculated by summing up the amounts of all invoices with
+          a status of 'skipped' for each day.
+        data_type: NUMBER
+      - name: DAILY_SIMPLIFIED_BALANCE_USD
+        description: This column represents the simplified balance in USD on a daily
+          basis. It is calculated by subtracting the daily refunded amount from
+          the daily paid amount.
+        data_type: NUMBER
+      - name: TOTAL_CANCELLED_AMOUNT_USD
+        description: This column represents the cumulative total of daily cancelled
+          amounts in USD for each organization, calculated from the start of the
+          data up to the current row date.
+        data_type: NUMBER
+      - name: TOTAL_PREVIOUS_CANCELLED_AMOUNT_USD
+        description: This column represents the cumulative total of daily cancelled
+          amounts in USD for each organization, calculated from the start of the
+          data up to the day before the current row date.
+        data_type: NUMBER
+      - name: TOTAL_CREDITED_AMOUNT_USD
+        description: This column represents the cumulative total of daily credited
+          amounts in USD for each organization, calculated from the start of the
+          data up to the current row date.
+        data_type: NUMBER
+      - name: TOTAL_PREVIOUS_CREDITED_AMOUNT_USD
+        description: This column represents the total amount credited in USD for an
+          organization up to the previous day. It is calculated by summing up
+          the daily credited amounts from the start of the data till the day
+          before the current date.
+        data_type: NUMBER
+      - name: TOTAL_FAILED_AMOUNT_USD
+        description: This column represents the total amount failed in USD for an
+          organization up to the current day. It is calculated by summing up the
+          daily failed amounts from the start of the data till the current date.
+        data_type: NUMBER
+      - name: TOTAL_PREVIOUS_FAILED_AMOUNT_USD
+        description: This column represents the total amount failed in USD for an
+          organization up to the previous day. It is calculated by summing up
+          the daily failed amounts from the start of the data till the day
+          before the current date.
+        data_type: NUMBER
+      - name: TOTAL_OPEN_AMOUNT_USD
+        description: This column represents the total amount in USD that is currently
+          open (i.e., not yet paid or cancelled) for each organization on a
+          given day. It is calculated as the cumulative sum of the daily open
+          amounts for each organization, up to and including the current day.
+        data_type: NUMBER
+      - name: TOTAL_PREVIOUS_OPEN_AMOUNT_USD
+        description: This column represents the total amount in USD that was open (i.e.,
+          not yet paid or cancelled) for each organization on the previous day.
+          It is calculated as the cumulative sum of the daily open amounts for
+          each organization, up to but not including the current day.
+        data_type: NUMBER
+      - name: TOTAL_PAID_AMOUNT_USD
+        description: This column represents the total amount in USD that has been paid
+          by each organization on a given day. It is calculated as the
+          cumulative sum of the daily paid amounts for each organization, up to
+          and including the current day.
+        data_type: NUMBER
+      - name: TOTAL_PREVIOUS_PAID_AMOUNT_USD
+        description: This column represents the cumulative total of daily paid amounts
+          in USD for each organization up to the day before the current date. It
+          is calculated by summing up the 'daily_paid_amount_usd' for each
+          organization from the start date up to the day before the current
+          date.
+        data_type: NUMBER
+      - name: TOTAL_PENDING_AMOUNT_USD
+        description: This column represents the cumulative total of daily pending
+          amounts in USD for each organization up to the current date. It is
+          calculated by summing up the 'daily_pending_amount_usd' for each
+          organization from the start date up to the current date.
+        data_type: NUMBER
+      - name: TOTAL_PREVIOUS_PENDING_AMOUNT_USD
+        description: This column represents the cumulative total of daily pending
+          amounts in USD for each organization up to the day before the current
+          date. It is calculated by summing up the 'daily_pending_amount_usd'
+          for each organization from the start date up to the day before the
+          current date.
+        data_type: NUMBER
+      - name: TOTAL_PROCESSING_AMOUNT_USD
+        description: This column represents the total amount in USD that is currently
+          being processed for the organization. It is calculated by summing up
+          the daily processing amounts for each organization, starting from the
+          first day up to the current day.
+        data_type: NUMBER
+      - name: TOTAL_PREVIOUS_PROCESSING_AMOUNT_USD
+        description: This column represents the total amount in USD that was being
+          processed for the organization up to the previous day. It is
+          calculated by summing up the daily processing amounts for each
+          organization, starting from the first day up to the day before the
+          current day.
+        data_type: NUMBER
+      - name: TOTAL_REFUNDED_AMOUNT_USD
+        description: This column represents the total amount in USD that has been
+          refunded to the organization. It is calculated by summing up the daily
+          refunded amounts for each organization, starting from the first day up
+          to the current day.
+        data_type: NUMBER
+      - name: TOTAL_PREVIOUS_REFUNDED_AMOUNT_USD
+        description: This column represents the total amount refunded in USD up to the
+          previous day for each organization. It is calculated by summing up the
+          daily refunded amounts from the start date to the day before the
+          current date.
+        data_type: NUMBER
+      - name: TOTAL_SKIPPED_AMOUNT_USD
+        description: This column represents the total amount skipped in USD up to the
+          current day for each organization. It is calculated by summing up the
+          daily skipped amounts from the start date to the current date.
+        data_type: NUMBER
+      - name: TOTAL_PREVIOUS_SKIPPED_AMOUNT_USD
+        description: This column represents the total amount skipped in USD up to the
+          previous day for each organization. It is calculated by summing up the
+          daily skipped amounts from the start date to the day before the
+          current date.
+        data_type: NUMBER
+      - name: TOTAL_SIMPLIFIED_BALANCE_USD
+        description: This column represents the total simplified balance in USD for each
+          organization. It is calculated as the difference between the total
+          paid amount and the total refunded amount.
+        data_type: NUMBER
+      - name: TOTAL_PREVIOUS_SIMPLIFIED_BALANCE_USD
+        description: This column represents the total simplified balance in USD for each
+          organization on the previous day. It is calculated as the difference
+          between the total paid amount and the total refunded amount on the
+          previous day.
+        data_type: NUMBER
+      - name: TOTAL_SIMPLIFIED_BALANCE_DAY_ON_DAY_RATIO
+        description: This column represents the day-on-day ratio of the total simplified
+          balance in USD for each organization. It is calculated as the absolute
+          value of the ratio of the total simplified balance on the current day
+          to the total simplified balance on the previous day.
+        data_type: NUMBER
   - name: s_invoices_dates_mapping
-    description: "Auxiliar table to calculate a random date for the different parent_invoice_id values since this was not provided in the original dataset"
+    description: Auxiliar table to calculate a random date for the different
+      parent_invoice_id values since this was not provided in the original
+      dataset
     columns:
       - name: parent_invoice_id
-        description: "The primary key for this table"
+        description: The primary key for this table
         tests:
           - unique
           - not_null
+  - name: s_invoice_dates_mapping
+    description: The s_invoice_dates_mapping model is designed to map each parent
+      invoice ID to a random date. The random date is generated by adding a
+      random number of days (between 1 and 100) to the date when the
+      organization associated with the invoice was created. The model uses a
+      common table expression (CTE) to first identify the earliest created date
+      for each parent invoice ID. This is achieved by joining the invoices table
+      from the raw_source_data schema with the d_organizations table from the
+      dwh schema on the organization_id column. The ROW_NUMBER() window function
+      is used to rank the rows within each partition of parent_invoice_id,
+      ordered by the created_date_ts. The first row (i.e., the one with the
+      earliest created_date_ts) for each parent_invoice_id is selected. The
+      final output of the model includes the parent_invoice_id and the generated
+      random_date.
+    columns:
+      - name: PARENT_INVOICE_ID
+        description: This column represents the unique identifier of the parent invoice.
+          It is derived from the 'parent_invoice_id' column in the 'invoices'
+          table in the 'raw_source_data' schema of the 'dcf_deel_test' database.
+        data_type: NUMBER
+        tests:
+          - unique
+          - not_null
+      - name: RANDOM_DATE
+        description: This column represents a randomly generated date for each parent
+          invoice. The date is generated by adding a random number of days
+          (between 1 and 100) to the creation date of the organization
+          associated with the invoice. The creation date is obtained from the
+          'created_date_ts' column in the 'd_organizations' table in the 'dwh'
+          schema of the 'dcf_deel_test' database.
+        data_type: DATE

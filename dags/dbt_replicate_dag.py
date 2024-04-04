@@ -29,17 +29,21 @@ def load_manifest():
     return data
 
 
+# This function parses the run_results.json artifact for a given dbt test and sends a Slack notification if there are failures
 def parse_run_results_and_slack_alert(test_id, **context):
+    # Read the run results file
     with open(DBT_RUN_RESULTS_PATH) as f:
         data = json.load(f)
         test_id_unique_id = test_id
         failures_value = 0
+        # Iterate through the results to find the test with the specified ID
         for item in data.get("results"):
             if item.get("unique_id") == test_id_unique_id:
                 failures_value = item.get("failures")
                 compiled_code = item.get("compiled_code")
                 break
 
+    # Prepare the Slack notification message
     body_slack = f"""
 :red_circle: Airflow Task Failed:
 *DAG:* {context.get('task_instance').dag_id}
@@ -56,6 +60,7 @@ Have a nice day,
 Airflow bot
 """
 
+    # Send the Slack notification if there are failures
     if failures_value > 0:
         send_slack_notification(
             text=body_slack,

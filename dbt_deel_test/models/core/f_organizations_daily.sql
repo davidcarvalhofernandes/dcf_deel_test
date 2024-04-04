@@ -24,7 +24,7 @@ with date_spine as (
         i.*
         , mid.random_date
     from {{ source('raw_source_data','invoices') }} as i
-    left join dwh_stg.map_invoice_dates as mid where i.parent_invoice_id = mid.parent_invoice_id
+    left join dwh_stg.map_invoice_dates as mid where i.parent_invoice_id = mid.parent_invoice_id  {# please note that dwh_stg.map_invoice_dates is just a static version of s_invoice_dates_mapping that I executed once to avoid having different random dates in each execution. #}
 )
 
 , orgs_per_day as (

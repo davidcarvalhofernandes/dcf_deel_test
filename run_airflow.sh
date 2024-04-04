@@ -33,5 +33,5 @@ airflow connections add --conn-type slack --conn-password $SLACK_TOKEN_DATA_ALER
 python "$AIRFLOW_HOME"/utils/reload_yaml_config.py
 
 #bash
-airflow webserver & airflow scheduler
-# $AIRFLOW_HOME/utils/bash_scripts/dbt_init.sh & airflow webserver & airflow scheduler
+#airflow webserver & airflow scheduler
+$AIRFLOW_HOME/utils/bash_scripts/dbt_init.sh & airflow webserver & airflow scheduler

@@ -11,7 +11,7 @@ services:
       - "5433:5432"
     volumes:
       - "./airflow_dev_dbdata:/var/lib/postgresql/data"
-  airflow-tk:
+  airflow:
     mem_limit: 4096m
     mem_reservation: 2048m
     build:
