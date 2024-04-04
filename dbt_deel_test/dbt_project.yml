@@ -36,5 +36,5 @@ models:
     core:
       s_invoice_dates_mapping:
         +schema: stg
-    
-    # Config indicated by + and applies to all files under models/example/
+      f_organizations_daily:
+      d_organizations:

@@ -21,3 +21,12 @@ models:
           combination_of_columns:
             - organization_id
             - dt
+  
+  - name: s_invoices_dates_mapping
+    description: "Auxiliar table to calculate a random date for the different parent_invoice_id values since this was not provided in the original dataset"
+    columns:
+      - name: parent_invoice_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null

@@ -1,0 +1,13 @@
+dbt:
+  outputs:
+    dev:
+      account: account_xxx
+      database: dcf_deel_test
+      password: xxx
+      role: accountadmin
+      schema: dwh
+      threads: 4
+      type: snowflake
+      user: davidfernandes
+      warehouse: compute_wh
+  target: dev

@@ -9,7 +9,6 @@ with min_invoice_dt as (
 
 select
     parent_invoice_id
-    , created_date_ts::date as invoice_date
     , dateadd(
         'day'
         , floor(1 + uniform(1, 100, random()))

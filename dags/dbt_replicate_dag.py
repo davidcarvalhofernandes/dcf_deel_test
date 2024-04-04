@@ -156,12 +156,6 @@ for node_key, node_val in data["nodes"].items():
                     node_key, node_folder, node_dag_config, "test"
                 )
 
-            if "regenerate_pdt" in node_val.get("tags"):
-                node_regenerate_pdt = node_key.replace("model", "regenerate_pdt")
-                dbt_tasks[node_regenerate_pdt] = make_dbt_task(
-                    node_key, node_folder, node_dag_config, "regenerate_pdt"
-                )
-
 for node_key, node_val in data["nodes"].items():
     if node_key.split(".")[0] == "model":
         # Set dependency to run tests on a model after model runs finishes
