@@ -1,3 +1,9 @@
+This repo has the code to answer the questions asked in Deel's take home exercise.
+Since the last question suggests to use Airflow to send a Slack notification, I used an airflow docker image to create a DAG that runs the dbt models created, the correspodning tests and also a validation task to see if a particular test has failed and send a Slack notification if so.
+The DAG looks like this:
+![image](https://github.com/davidcarvalhofernandes/dcf_deel_test/assets/60223435/90580602-17a5-427f-b8b4-7bb4c78055b0)
+
+
 Instructions to run the code:
   1. Add you slack token in docker-compose.yml
   2. Run `docker-compose up --build`
