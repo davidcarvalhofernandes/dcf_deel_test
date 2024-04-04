@@ -1,0 +1,36 @@
+[sqlfluff]
+dialect = snowflake
+templater = dbt
+max_line_length = 120
+
+[sqlfluff:templater:dbt]
+project_dir = ./
+
+[sqlfluff:layout:type:comma]
+line_position = leading
+
+[sqlfluff:templater:jinja]
+apply_dbt_builtins = True
+
+[sqlfluff:rules:ambiguous.join]
+fully_qualify_join_types = inner
+
+[sqlfluff:rules:capitalisation.keywords]
+capitalisation_policy = consistent
+[sqlfluff:rules:capitalisation.identifiers]
+capitalisation_policy = lower
+[sqlfluff:rules:capitalisation.functions]
+extended_capitalisation_policy = consistent
+[sqlfluff:rules:capitalisation.literals]
+capitalisation_policy = lower
+[sqlfluff:rules:capitalisation.types]
+extended_capitalisation_policy = lower
+
+[sqlfluff:rules:references.qualification]
+
+[sqlfluff:rules:structure.else_null]
+
+[sqlfluff:rules:structure.simple_case]
+
+[sqlfluff:rules:structure.subquery]
+forbid_subquery_in = both

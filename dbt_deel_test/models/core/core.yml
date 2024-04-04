@@ -1,0 +1,23 @@
+
+version: 2
+
+models:
+  - name: d_organizations
+    description: "Dimension table for organizations"
+    tests:
+      - dbt_utils.expression_is_true:
+          expression: "first_payment_date::date >= created_date_ts::date"
+    columns:
+      - name: organization_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+
+  - name: f_organizations_daily
+    description: "Daily snapshot of organizations"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - organization_id
+            - dt

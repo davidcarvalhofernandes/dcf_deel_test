@@ -1,0 +1,35 @@
+FROM apache/airflow@sha256:88c01d81efba4075e0423266d1467beb80fbe78fc88b5d843466d055c55e437c
+
+
+# Removing the need to input password for airflow user when running sudo commands
+USER root
+RUN groupadd airflow
+RUN usermod -g airflow airflow
+RUN echo 'airflow ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/airflow
+USER airflow
+
+ADD requirements.txt /requirements.txt
+
+
+# RUN sudo apt-get update && sudo apt-get install -y groff libnss3 gcc python3-dev wget libpq-dev jq git
+RUN pip install --upgrade pip
+RUN pip3 install -r /requirements.txt --user
+
+
+ADD run_airflow.sh /run_airflow.sh
+ADD entrypoint.sh /entrypoint.sh
+ADD dbt_deel_test /home/airflow/airflow/dbt_deel_test
+ADD utils /home/airflow/airflow/utils
+# ADD plugins /home/airflow/airflow/plugins
+
+
+WORKDIR /home/airflow
+
+
+RUN sudo chown -hR airflow:airflow ~/airflow/
+RUN sudo chmod +x ~/airflow/utils/bash_scripts/*.sh
+
+EXPOSE 8080
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/run_airflow.sh"]

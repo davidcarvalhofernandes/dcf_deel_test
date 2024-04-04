@@ -1,0 +1,34 @@
+version: '2'
+
+services:
+  postgres:
+    image: postgres:12
+    environment:
+      - POSTGRES_USER=airflowmd
+      - POSTGRES_PASSWORD=airflowmd
+      - POSTGRES_DB=airflowmd
+    ports:
+      - "5433:5432"
+    volumes:
+      - "./airflow_dev_dbdata:/var/lib/postgresql/data"
+  airflow-tk:
+    mem_limit: 4096m
+    mem_reservation: 2048m
+    build:
+      context: .
+      dockerfile: Dockerfile_arm64
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW_HOME=/home/airflow/airflow
+      - SLACK_TOKEN_DATA_ALERTS=replace_accordingly
+#    entrypoint: /entrypoint.sh
+#    depends_on:
+#      - postgres
+#    hostname: 10.0.2.179
+    volumes:
+      - ./dags:/home/airflow/airflow/dags
+      - ./utils:/home/airflow/airflow/utils
+      - ./dbt_deel_test:/home/airflow/airflow/dbt_deel_test
+      - ./run_airflow.sh:/run_airflow.sh
+    ports:
+      - "8080:8080"
