@@ -105,7 +105,7 @@ class TestBashOperator(BashOperator):
 def make_dbt_task(node, node_folder, dag_config, dbt_verb, extra_params={}):
     """Returns an Airflow operator either run and test an individual model"""
     DBT_DIR = os.environ["AIRFLOW_HOME"] + "/dbt_deel_test/"
-    # GLOBAL_CLI_FLAGS = "--no-write-json"
+    GLOBAL_CLI_FLAGS = "--no-write-json"
     GLOBAL_CLI_FLAGS = ""
     dag_id = f"{DAG_NAME_PREFIX}_{node_folder}"
     model = node.split(".")[-1]
@@ -125,7 +125,7 @@ def make_dbt_task(node, node_folder, dag_config, dbt_verb, extra_params={}):
             retries=0,
             task_id=node_test,
             bash_command=f"""
-            dbt {GLOBAL_CLI_FLAGS} {dbt_verb} --project-dir '{DBT_DIR}' --profiles-dir '{DBT_PROFILES_PATH}' --target dev --select {model} --indirect-selection=cautious
+            dbt {dbt_verb} --project-dir '{DBT_DIR}' --profiles-dir '{DBT_PROFILES_PATH}' --target dev --select {model} --indirect-selection=cautious
             """,
             dag=globals()[dag_id],
         )

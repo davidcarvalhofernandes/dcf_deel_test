@@ -2,7 +2,7 @@ dbt_load_core:
   dag_type: dbt_dag
   dag_conf:
     schedule_interval: null
-    description: Data warehouse DB to Data Warehouse DB ETL using dbt for all models.
+    description: DAG that parses dbt's manifest.json file and maps the dbt dependencies into airflow tasks.
     tags: [deel_takehome_test]
     default_args:
       start_date: 2024-04-01
